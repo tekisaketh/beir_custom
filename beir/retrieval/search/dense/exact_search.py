@@ -5,7 +5,6 @@ import torch
 from typing import Dict
 import heapq
 
-logger = logging.getLogger(__name__)
 
 # DenseRetrievalExactSearch is parent class for any dense model that can be used for retrieval
 # Abstract class is BaseSearch
@@ -22,6 +21,7 @@ class DenseRetrievalExactSearch(BaseSearch):
         self.convert_to_tensor = kwargs.get("convert_to_tensor", True)
         self.results = {}
     print("called this dense function...")
+    
     def search(self, 
                corpus: Dict[str, Dict[str, str]], 
                queries: Dict[str, str], 
@@ -35,26 +35,26 @@ class DenseRetrievalExactSearch(BaseSearch):
         if score_function not in self.score_functions:
             raise ValueError("score function: {} must be either (cos_sim) for cosine similarity or (dot) for dot product".format(score_function))
             
-        logger.info("Encoding Queries...")
+        print("Encoding Queries...")
         query_ids = list(queries.keys())
         self.results = {qid: {} for qid in query_ids}
         queries = [queries[qid] for qid in queries]
         query_embeddings = self.model.encode_queries(
             queries, batch_size=self.batch_size, show_progress_bar=self.show_progress_bar, convert_to_tensor=self.convert_to_tensor)
           
-        logger.info("Sorting Corpus by document length (Longest first)...")
+        print("Sorting Corpus by document length (Longest first)...")
 
         corpus_ids = sorted(corpus, key=lambda k: len(corpus[k].get("title", "") + corpus[k].get("text", "")), reverse=True)
         corpus = [corpus[cid] for cid in corpus_ids]
 
-        logger.info("Encoding Corpus in batches... Warning: This might take a while!")
-        logger.info("Scoring Function: {} ({})".format(self.score_function_desc[score_function], score_function))
+        print("Encoding Corpus in batches... Warning: This might take a while!")
+        print("Scoring Function: {} ({})".format(self.score_function_desc[score_function], score_function))
 
         itr = range(0, len(corpus), self.corpus_chunk_size)
         
         result_heaps = {qid: [] for qid in query_ids}  # Keep only the top-k docs for each query
         for batch_num, corpus_start_idx in enumerate(itr):
-            logger.info("Encoding Batch {}/{}...".format(batch_num+1, len(itr)))
+            print("Encoding Batch {}/{}...".format(batch_num+1, len(itr)))
             corpus_end_idx = min(corpus_start_idx + self.corpus_chunk_size, len(corpus))
 
             # Encode chunk of corpus    

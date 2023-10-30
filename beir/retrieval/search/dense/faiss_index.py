@@ -22,7 +22,7 @@ class FaissIndex:
         scores_arr, ids_arr = self.index.search(query_embeddings, k)
         if self._passage_ids is not None:
             ids_arr = self._passage_ids[ids_arr.reshape(-1)].reshape(query_embeddings.shape[0], -1)
-        logger.info("Total search time: %.3f", time.time() - start_time)
+        print("Total search time: %.3f", time.time() - start_time)
         return scores_arr, ids_arr
     
     def save(self, fname: str):
@@ -120,13 +120,13 @@ class FaissBinaryIndex(FaissIndex):
 
         if self._passage_ids is not None:
             _, ids_arr = self.index.search(bin_query_embeddings, binary_k)
-            logger.info("Initial search time: %.3f", time.time() - start_time)
+            print("Initial search time: %.3f", time.time() - start_time)
             passage_embeddings = np.unpackbits(self._passage_embeddings[ids_arr.reshape(-1)])
             passage_embeddings = passage_embeddings.reshape(num_queries, binary_k, -1).astype(np.float32)
         else:
             raw_index = self.index.index
             _, ids_arr = raw_index.search(bin_query_embeddings, binary_k)
-            logger.info("Initial search time: %.3f", time.time() - start_time)
+            print("Initial search time: %.3f", time.time() - start_time)
             passage_embeddings = np.vstack(
                 [np.unpackbits(raw_index.reconstruct(int(id_))) for id_ in ids_arr.reshape(-1)]
             )
@@ -151,7 +151,7 @@ class FaissBinaryIndex(FaissIndex):
             ids_arr = ids_arr.reshape(num_queries, -1)
 
         scores_arr = scores_arr[np.arange(num_queries)[:, None], sorted_indices]
-        logger.info("Total search time: %.3f", time.time() - start_time)
+        print("Total search time: %.3f", time.time() - start_time)
 
         return scores_arr[:, :k], ids_arr[:, :k]
     
