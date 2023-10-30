@@ -63,6 +63,7 @@ class DenseRetrievalFaissSearch(BaseSearch):
     
     def _index(self, corpus: Dict[str, Dict[str, str]], score_function: str = None):
         tqdm.write("creating index ...")
+        #check
         print("Sorting Corpus by document length (Longest first)...")
         corpus_ids = sorted(corpus, key=lambda k: len(corpus[k].get("title", "") + corpus[k].get("text", "")), reverse=True)
         self._create_mapping_ids(corpus_ids)
