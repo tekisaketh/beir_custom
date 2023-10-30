@@ -21,7 +21,7 @@ class DenseRetrievalExactSearch(BaseSearch):
         self.show_progress_bar = kwargs.get("show_progress_bar", True)
         self.convert_to_tensor = kwargs.get("convert_to_tensor", True)
         self.results = {}
-    
+    print("called this dense function...")
     def search(self, 
                corpus: Dict[str, Dict[str, str]], 
                queries: Dict[str, str], 
