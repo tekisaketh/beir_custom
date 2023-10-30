@@ -232,7 +232,8 @@ class HNSWFaissSearch(DenseRetrievalFaissSearch):
         self.hnsw_ef_search = hnsw_ef_search
         self.hnsw_ef_construction = hnsw_ef_construction
         self.similarity_metric = similarity_metric
-    
+    tqdm.write("hnsw initialized..")
+    print("this also printed")
     def load(self, input_dir: str, prefix: str = "my-index", ext: str = "hnsw"):
         input_faiss_path, passage_ids = super()._load(input_dir, prefix, ext)
         base_index = faiss.read_index(input_faiss_path)
