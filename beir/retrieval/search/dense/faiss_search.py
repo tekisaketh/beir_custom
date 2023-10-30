@@ -62,7 +62,7 @@ class DenseRetrievalFaissSearch(BaseSearch):
         print("Index size: {:.2f}MB".format(os.path.getsize(save_faiss_path)*0.000001))
     
     def _index(self, corpus: Dict[str, Dict[str, str]], score_function: str = None):
-        
+        tqdm.write("creating index ...")
         print("Sorting Corpus by document length (Longest first)...")
         corpus_ids = sorted(corpus, key=lambda k: len(corpus[k].get("title", "") + corpus[k].get("text", "")), reverse=True)
         self._create_mapping_ids(corpus_ids)
@@ -233,7 +233,7 @@ class HNSWFaissSearch(DenseRetrievalFaissSearch):
         self.hnsw_ef_construction = hnsw_ef_construction
         self.similarity_metric = similarity_metric
     tqdm.write("hnsw initialized..")
-    print("this also printed")
+    
     def load(self, input_dir: str, prefix: str = "my-index", ext: str = "hnsw"):
         input_faiss_path, passage_ids = super()._load(input_dir, prefix, ext)
         base_index = faiss.read_index(input_faiss_path)
