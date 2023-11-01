@@ -23,7 +23,8 @@ class GenericDataLoader:
         self.query_file = os.path.join(data_folder, query_file) if data_folder else query_file
         self.qrels_folder = os.path.join(data_folder, qrels_folder) if data_folder else None
         self.qrels_file = qrels_file
-    
+        print("initialised")
+
     @staticmethod
     def check(fIn: str, ext: str):
         if not os.path.exists(fIn):
