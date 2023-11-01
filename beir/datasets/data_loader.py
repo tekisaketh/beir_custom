@@ -39,20 +39,20 @@ class GenericDataLoader:
         self.check(fIn=self.qrels_file, ext="tsv")
         
         if not len(self.corpus):
-            logger.info("Loading Corpus...")
+            print("Loading Corpus...")
             self._load_corpus()
-            logger.info("Loaded %d Documents.", len(self.corpus))
-            logger.info("Doc Example: %s", list(self.corpus.values())[0])
+            print("Loaded %d Documents.", len(self.corpus))
+            print("Doc Example: %s", list(self.corpus.values())[0])
         
         if not len(self.queries):
-            logger.info("Loading Queries...")
+            print("Loading Queries...")
             self._load_queries()
         
         if os.path.exists(self.qrels_file):
             self._load_qrels()
             self.queries = {qid: self.queries[qid] for qid in self.qrels}
-            logger.info("Loaded %d Queries.", len(self.queries))
-            logger.info("Query Example: %s", list(self.queries.values())[0])
+            print("Loaded %d Queries.", len(self.queries))
+            print("Query Example: %s", list(self.queries.values())[0])
         
         return self.corpus, self.queries, self.qrels
 
@@ -64,20 +64,20 @@ class GenericDataLoader:
         self.check(fIn=self.qrels_file, ext="tsv")
         
         if not len(self.corpus):
-            logger.info("Loading Corpus...")
+            print("Loading Corpus...")
             self._load_corpus()
-            logger.info("Loaded %d %s Documents.", len(self.corpus), split.upper())
-            logger.info("Doc Example: %s", list(self.corpus.values())[0])
+            print("Loaded %d %s Documents.", len(self.corpus), split.upper())
+            print("Doc Example: %s", list(self.corpus.values())[0])
         
         if not len(self.queries):
-            logger.info("Loading Queries...")
+            print("Loading Queries...")
             self._load_queries()
         
         if os.path.exists(self.qrels_file):
             self._load_qrels()
             self.queries = {qid: self.queries[qid] for qid in self.qrels}
-            logger.info("Loaded %d %s Queries.", len(self.queries), split.upper())
-            logger.info("Query Example: %s", list(self.queries.values())[0])
+            print("Loaded %d %s Queries.", len(self.queries), split.upper())
+            print("Query Example: %s", list(self.queries.values())[0])
         
         return self.corpus, self.queries, self.qrels
     
@@ -86,10 +86,10 @@ class GenericDataLoader:
         self.check(fIn=self.corpus_file, ext="jsonl")
 
         if not len(self.corpus):
-            logger.info("Loading Corpus...")
+            print("Loading Corpus...")
             self._load_corpus()
-            logger.info("Loaded %d Documents.", len(self.corpus))
-            logger.info("Doc Example: %s", list(self.corpus.values())[0])
+            print("Loaded %d Documents.", len(self.corpus))
+            print("Doc Example: %s", list(self.corpus.values())[0])
 
         return self.corpus
     
@@ -115,6 +115,7 @@ class GenericDataLoader:
         
         reader = csv.reader(open(self.qrels_file, encoding="utf-8"), 
                             delimiter="\t", quoting=csv.QUOTE_MINIMAL)
+        print("opening the custom file..")
         next(reader)
         
         for id, row in enumerate(reader):
