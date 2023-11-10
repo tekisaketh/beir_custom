@@ -14,7 +14,7 @@ class GenericDataLoader:
         self.corpus = {}
         self.queries = {}
         self.qrels = {}
-        
+
         if prefix:
             query_file = prefix + "-" + query_file
             qrels_folder = prefix + "-" + qrels_folder
@@ -57,8 +57,9 @@ class GenericDataLoader:
         
         return self.corpus, self.queries, self.qrels
 
-    def load(self, split="test") -> Tuple[Dict[str, Dict[str, str]], Dict[str, str], Dict[str, Dict[str, int]]]:
+    def load(self,limit: int=150000, split="test") -> Tuple[Dict[str, Dict[str, str]], Dict[str, str], Dict[str, Dict[str, int]]]:
         
+        self.limit=limit
         self.qrels_file = os.path.join(self.qrels_folder, split + ".tsv")
         self.check(fIn=self.corpus_file, ext="jsonl")
         self.check(fIn=self.query_file, ext="jsonl")
@@ -66,7 +67,7 @@ class GenericDataLoader:
         
         if not len(self.corpus):
             print("Loading Corpus...")
-            self._load_corpus()
+            self._load_corpus(self.limit)
             print("Loaded %d %s Documents.", len(self.corpus), split.upper())
             print("Doc Example: %s", list(self.corpus.values())[0])
         
@@ -82,23 +83,24 @@ class GenericDataLoader:
         
         return self.corpus, self.queries, self.qrels
     
-    def load_corpus(self) -> Dict[str, Dict[str, str]]:
+    def load_corpus(self, limit) -> Dict[str, Dict[str, str]]:
         
         self.check(fIn=self.corpus_file, ext="jsonl")
 
         if not len(self.corpus):
             print("Loading Corpus...")
-            self._load_corpus()
+            self._load_corpus(limit)
             print("Loaded %d Documents.", len(self.corpus))
             print("Doc Example: %s", list(self.corpus.values())[0])
 
         return self.corpus
     
-    def _load_corpus(self):
+    def _load_corpus(self, limit):
     
         num_lines = sum(1 for i in open(self.corpus_file, 'rb'))
+        print("loading limited files:",limit)
         with open(self.corpus_file, encoding='utf8') as fIn:
-            for line in tqdm(fIn, total=num_lines):
+            for line in tqdm(fIn, total=limit):
                 line = json.loads(line)
                 self.corpus[line.get("_id")] = {
                     "text": line.get("text"),
