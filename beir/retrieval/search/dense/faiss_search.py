@@ -338,7 +338,7 @@ class FlatIPFaissSearch(DenseRetrievalFaissSearch):
         faiss_ids, corpus_embeddings = super()._index(corpus, score_function, **kwargs)
         #base_index = faiss.IndexFlatIP(self.dim_size)
         print("gpu index being created ...")
-        base_index = faiss.GpuIndexIVF.add_with_ids(n=self.dim_size,x=corpus_embeddings,ids=faiss_ids)
+        base_index = faiss.GpuIndexIVF.add_with_ids(x=corpus_embeddings,ids=faiss_ids)
         if self.use_gpu:
             print("Moving Faiss Index from CPU to GPU...")
             gpu_base_index = faiss.index_cpu_to_gpu(self.single_gpu, 0, base_index)
