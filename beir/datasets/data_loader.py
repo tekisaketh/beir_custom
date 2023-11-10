@@ -109,7 +109,8 @@ class GenericDataLoader:
                     "title": line.get("title"),
                 }
                 if(count==self.limit):
-                    break
+                    print("break")
+                    exit
     
     def _load_queries(self):
         
