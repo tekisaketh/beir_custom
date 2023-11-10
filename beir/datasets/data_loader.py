@@ -108,6 +108,7 @@ class GenericDataLoader:
                     "text": line.get("text"),
                     "title": line.get("title"),
                 }
+                print(count)
                 if(count==self.limit):
                     print("break")
                     exit
