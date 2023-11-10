@@ -100,13 +100,15 @@ class GenericDataLoader:
         #num_lines = sum(1 for i in open(self.corpus_file, 'rb'))
         print("loading limited files:",self.limit)
         with open(self.corpus_file, encoding='utf8') as fIn:
+            count=0
             for line in tqdm(fIn, total=self.limit):
                 line = json.loads(line)
+                count+=1
                 self.corpus[line.get("_id")] = {
                     "text": line.get("text"),
                     "title": line.get("title"),
                 }
-                if("doc"+str(self.limit)==line.get("_id")):
+                if(count==self.limit):
                     break
     
     def _load_queries(self):
