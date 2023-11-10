@@ -66,7 +66,7 @@ class GenericDataLoader:
         self.check(fIn=self.qrels_file, ext="tsv")
         
         if not len(self.corpus):
-            print("Loading Corpus...")
+            print("Loading Corpus...x")
             self._load_corpus(self.limit)
             print("Loaded %d %s Documents.", len(self.corpus), split.upper())
             print("Doc Example: %s", list(self.corpus.values())[0])
@@ -98,9 +98,9 @@ class GenericDataLoader:
     def _load_corpus(self, limit):
     
         num_lines = sum(1 for i in open(self.corpus_file, 'rb'))
-        print("loading limited files:",limit)
+        print("loading limited files:",self.limit)
         with open(self.corpus_file, encoding='utf8') as fIn:
-            for line in tqdm(fIn, total=limit):
+            for line in tqdm(fIn, total=self.limit):
                 line = json.loads(line)
                 self.corpus[line.get("_id")] = {
                     "text": line.get("text"),
