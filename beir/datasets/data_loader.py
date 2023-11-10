@@ -98,7 +98,7 @@ class GenericDataLoader:
     def _load_corpus(self, limit:int=150000):
         self.limit=limit
         #num_lines = sum(1 for i in open(self.corpus_file, 'rb'))
-        print("loading limited files:",self.limit)
+        print("loading limited files are:",self.limit)
         with open(self.corpus_file, encoding='utf8') as fIn:
             count=0
             for line in tqdm(fIn, total=self.limit):
