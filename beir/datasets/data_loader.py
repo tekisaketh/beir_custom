@@ -83,20 +83,20 @@ class GenericDataLoader:
         
         return self.corpus, self.queries, self.qrels
     
-    def load_corpus(self, limit) -> Dict[str, Dict[str, str]]:
-        
+    def load_corpus(self, limit:int=150000) -> Dict[str, Dict[str, str]]:
+        self.limit=limit
         self.check(fIn=self.corpus_file, ext="jsonl")
 
         if not len(self.corpus):
             print("Loading Corpus...")
-            self._load_corpus(limit)
+            self._load_corpus(self.checklimit)
             print("Loaded %d Documents.", len(self.corpus))
             print("Doc Example: %s", list(self.corpus.values())[0])
 
         return self.corpus
     
-    def _load_corpus(self, limit):
-    
+    def _load_corpus(self, limit:int=150000):
+        self.limit=limit
         num_lines = sum(1 for i in open(self.corpus_file, 'rb'))
         print("loading limited files:",self.limit)
         with open(self.corpus_file, encoding='utf8') as fIn:
