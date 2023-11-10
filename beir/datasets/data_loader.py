@@ -111,7 +111,7 @@ class GenericDataLoader:
                 print(count)
                 if(count==self.limit):
                     print("break")
-                    exit
+                    break
     
     def _load_queries(self):
         
