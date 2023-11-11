@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 class DenseRetrievalFaissSearch(BaseSearch):
     
     def __init__(self, model, corpus_embeddings,faiss_ids, batch_size: int = 128, corpus_chunk_size: int = 50000, use_gpu: bool = False, **kwargs):
+        print("okay")
         self.model = model
         self.batch_size = batch_size
         self.corpus_embeddings = corpus_embeddings
