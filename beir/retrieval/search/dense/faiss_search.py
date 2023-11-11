@@ -66,7 +66,9 @@ class DenseRetrievalFaissSearch(BaseSearch):
     
     def _index(self, corpus: Dict[str, Dict[str, str]], score_function: str = None):
         
-        if(~isinstance(self.corpus_embeddings,np.ndarray) and ~isinstance(self.faiss_ids,np.ndarray)):
+        if(isinstance(self.corpus_embeddings,np.ndarray) and isinstance(self.faiss_ids,np.ndarray)):
+            return self.faiss_ids, self.corpus_embeddings
+        else:
             tqdm.write("creating index ...")
             #check
             print("Sorting Corpus by document length (Longest first)...")
@@ -104,8 +106,6 @@ class DenseRetrievalFaissSearch(BaseSearch):
             del sub_corpus_embeddings
 
             return faiss_ids, corpus_embeddings
-        else:
-            return self.faiss_ids, self.corpus_embeddings
     
     def search(self, 
                corpus: Dict[str, Dict[str, str]],
