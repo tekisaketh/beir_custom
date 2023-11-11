@@ -236,7 +236,8 @@ class PQFaissSearch(DenseRetrievalFaissSearch):
 class HNSWFaissSearch(DenseRetrievalFaissSearch):
     def __init__(self, model, batch_size: int = 128, corpus_chunk_size: int = 50000, hnsw_store_n: int = 512, 
                  hnsw_ef_search: int = 128, hnsw_ef_construction: int = 200, similarity_metric=faiss.METRIC_INNER_PRODUCT, **kwargs):
-        super(HNSWFaissSearch, self).__init__(model, batch_size, corpus_chunk_size, **kwargs)
+        #super(HNSWFaissSearch, self).__init__(model, batch_size, corpus_chunk_size, **kwargs)
+        super().__init__()
         self.hnsw_store_n = hnsw_store_n
         self.hnsw_ef_search = hnsw_ef_search
         self.hnsw_ef_construction = hnsw_ef_construction
