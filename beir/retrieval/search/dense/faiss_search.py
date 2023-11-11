@@ -174,9 +174,9 @@ class BinaryFaissSearch(DenseRetrievalFaissSearch):
     
 
 class PQFaissSearch(DenseRetrievalFaissSearch):
-    def __init__(self, model, batch_size: int = 128, corpus_chunk_size: int = 50000, num_of_centroids: int = 96, 
+    def __init__(self, model,corpus_embeddings,faiss_ids, batch_size: int = 128, corpus_chunk_size: int = 50000, num_of_centroids: int = 96, 
                  code_size: int = 8, similarity_metric=faiss.METRIC_INNER_PRODUCT, use_rotation: bool = False, **kwargs):
-        super(PQFaissSearch, self).__init__(model, batch_size, corpus_chunk_size, **kwargs)
+        super(PQFaissSearch, self).__init__(model,corpus_embeddings,faiss_ids, batch_size, corpus_chunk_size, **kwargs)
         self.num_of_centroids = num_of_centroids
         self.code_size = code_size
         self.similarity_metric = similarity_metric
@@ -234,14 +234,15 @@ class PQFaissSearch(DenseRetrievalFaissSearch):
 
 
 class HNSWFaissSearch(DenseRetrievalFaissSearch):
-    def __init__(self, model, batch_size: int = 128, corpus_chunk_size: int = 50000, hnsw_store_n: int = 512, 
+    def __init__(self, model,corpus_embeddings,faiss_ids, batch_size: int = 128, corpus_chunk_size: int = 50000, hnsw_store_n: int = 512, 
                  hnsw_ef_search: int = 128, hnsw_ef_construction: int = 200, similarity_metric=faiss.METRIC_INNER_PRODUCT, **kwargs):
-        #super(HNSWFaissSearch, self).__init__(model, batch_size, corpus_chunk_size, **kwargs)
-        super().__init__()
+        super(HNSWFaissSearch, self).__init__(model,corpus_embeddings,faiss_ids, batch_size, corpus_chunk_size, **kwargs)
+        #super().__init__(model,batch_size)
         self.hnsw_store_n = hnsw_store_n
         self.hnsw_ef_search = hnsw_ef_search
         self.hnsw_ef_construction = hnsw_ef_construction
         self.similarity_metric = similarity_metric
+
     tqdm.write("hnsw initialized..")
     
     def load(self, input_dir: str, prefix: str = "my-index", ext: str = "hnsw"):
@@ -288,10 +289,10 @@ class HNSWFaissSearch(DenseRetrievalFaissSearch):
         return "hnsw_faiss_index"
 
 class HNSWSQFaissSearch(DenseRetrievalFaissSearch):
-    def __init__(self, model, batch_size: int = 128, corpus_chunk_size: int = 50000, hnsw_store_n: int = 128, 
+    def __init__(self, model,corpus_embeddings,faiss_ids, batch_size: int = 128, corpus_chunk_size: int = 50000, hnsw_store_n: int = 128, 
                  hnsw_ef_search: int = 128, hnsw_ef_construction: int = 200, similarity_metric=faiss.METRIC_INNER_PRODUCT, 
                  quantizer_type: str = "QT_8bit", **kwargs):
-        super(HNSWSQFaissSearch, self).__init__(model, batch_size, corpus_chunk_size, **kwargs)
+        super(HNSWSQFaissSearch, self).__init__(model,corpus_embeddings,faiss_ids, batch_size, corpus_chunk_size, **kwargs)
         self.hnsw_store_n = hnsw_store_n
         self.hnsw_ef_search = hnsw_ef_search
         self.hnsw_ef_construction = hnsw_ef_construction
@@ -370,10 +371,10 @@ class FlatIPFaissSearch(DenseRetrievalFaissSearch):
         return "flat_faiss_index"
 
 class PCAFaissSearch(DenseRetrievalFaissSearch):
-    def __init__(self, model, base_index: faiss.Index, output_dimension: int, batch_size: int = 128, 
+    def __init__(self, model,corpus_embeddings,faiss_ids, base_index: faiss.Index, output_dimension: int, batch_size: int = 128, 
                 corpus_chunk_size: int = 50000, pca_matrix = None, random_rotation: bool = False, 
                 eigen_power: float = 0.0, **kwargs):
-        super(PCAFaissSearch, self).__init__(model, batch_size, corpus_chunk_size, **kwargs)
+        super(PCAFaissSearch, self).__init__(model,corpus_embeddings,faiss_ids, batch_size, corpus_chunk_size, **kwargs)
         self.base_index = base_index
         self.output_dim = output_dimension
         self.pca_matrix = pca_matrix
@@ -426,9 +427,9 @@ class PCAFaissSearch(DenseRetrievalFaissSearch):
         return "pca_faiss_index"
 
 class SQFaissSearch(DenseRetrievalFaissSearch):
-    def __init__(self, model, batch_size: int = 128, corpus_chunk_size: int = 50000, 
+    def __init__(self, model,corpus_embeddings,faiss_ids, batch_size: int = 128, corpus_chunk_size: int = 50000, 
                 similarity_metric=faiss.METRIC_INNER_PRODUCT, quantizer_type: str = "QT_fp16", **kwargs):
-        super(SQFaissSearch, self).__init__(model, batch_size, corpus_chunk_size, **kwargs)
+        super(SQFaissSearch, self).__init__(model,corpus_embeddings,faiss_ids, batch_size, corpus_chunk_size, **kwargs)
         self.similarity_metric = similarity_metric
         self.qname = quantizer_type
 
