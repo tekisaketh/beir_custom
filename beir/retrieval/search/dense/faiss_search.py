@@ -13,9 +13,11 @@ logger = logging.getLogger(__name__)
 #Parent class for any faiss search
 class DenseRetrievalFaissSearch(BaseSearch):
     
-    def __init__(self, model, batch_size: int = 128, corpus_chunk_size: int = 50000, use_gpu: bool = False, **kwargs):
+    def __init__(self, model, corpus_embeddings: None,faiss_ids: None, batch_size: int = 128, corpus_chunk_size: int = 50000, use_gpu: bool = False, **kwargs):
         self.model = model
         self.batch_size = batch_size
+        self.corpus_embeddings = corpus_embeddings
+        self.faiss_ids = faiss_ids
         self.corpus_chunk_size = corpus_chunk_size
         self.score_functions = ['cos_sim','dot']
         self.mapping_tsv_keys = ["beir-docid", "faiss-docid"]
@@ -62,43 +64,47 @@ class DenseRetrievalFaissSearch(BaseSearch):
         print("Index size: {:.2f}MB".format(os.path.getsize(save_faiss_path)*0.000001))
     
     def _index(self, corpus: Dict[str, Dict[str, str]], score_function: str = None):
-        tqdm.write("creating index ...")
-        #check
-        print("Sorting Corpus by document length (Longest first)...")
-        corpus_ids = sorted(corpus, key=lambda k: len(corpus[k].get("title", "") + corpus[k].get("text", "")), reverse=True)
-        self._create_mapping_ids(corpus_ids)
-        corpus = [corpus[cid] for cid in corpus_ids]
-        normalize_embeddings = True if score_function == "cos_sim" else False
-
-        print("Encoding Corpus in batches... Warning: This might take a while!")
-
-        itr = range(0, len(corpus), self.corpus_chunk_size)
-
-        for batch_num, corpus_start_idx in enumerate(itr):
-            print("Encoding Batch {}/{}. Normalize: {}...".format(batch_num+1, len(itr), normalize_embeddings))
-            corpus_end_idx = min(corpus_start_idx + self.corpus_chunk_size, len(corpus))
-            
-            #Encode chunk of corpus    
-            sub_corpus_embeddings = self.model.encode_corpus(
-                corpus[corpus_start_idx:corpus_end_idx],
-                batch_size=self.batch_size,
-                show_progress_bar=True, 
-                normalize_embeddings=normalize_embeddings)
-            
-            if not batch_num: 
-                corpus_embeddings = sub_corpus_embeddings
-            else:
-                corpus_embeddings = np.vstack([corpus_embeddings, sub_corpus_embeddings])
         
-        #Index chunk of corpus into faiss index
-        print("Indexing Passages into Faiss...") 
-        
-        faiss_ids = [self.mapping.get(corpus_id) for corpus_id in corpus_ids]
-        self.dim_size = corpus_embeddings.shape[1]
+        if(self.corpus_embeddings == None or self.faiss_ids ==None):
+            tqdm.write("creating index ...")
+            #check
+            print("Sorting Corpus by document length (Longest first)...")
+            corpus_ids = sorted(corpus, key=lambda k: len(corpus[k].get("title", "") + corpus[k].get("text", "")), reverse=True)
+            self._create_mapping_ids(corpus_ids)
+            corpus = [corpus[cid] for cid in corpus_ids]
+            normalize_embeddings = True if score_function == "cos_sim" else False
 
-        del sub_corpus_embeddings
+            print("Encoding Corpus in batches... Warning: This might take a while!")
 
-        return faiss_ids, corpus_embeddings
+            itr = range(0, len(corpus), self.corpus_chunk_size)
+
+            for batch_num, corpus_start_idx in enumerate(itr):
+                print("Encoding Batch {}/{}. Normalize: {}...".format(batch_num+1, len(itr), normalize_embeddings))
+                corpus_end_idx = min(corpus_start_idx + self.corpus_chunk_size, len(corpus))
+                
+                #Encode chunk of corpus    
+                sub_corpus_embeddings = self.model.encode_corpus(
+                    corpus[corpus_start_idx:corpus_end_idx],
+                    batch_size=self.batch_size,
+                    show_progress_bar=True, 
+                    normalize_embeddings=normalize_embeddings)
+                
+                if not batch_num: 
+                    corpus_embeddings = sub_corpus_embeddings
+                else:
+                    corpus_embeddings = np.vstack([corpus_embeddings, sub_corpus_embeddings])
+            
+            #Index chunk of corpus into faiss index
+            print("Indexing Passages into Faiss...") 
+            
+            faiss_ids = [self.mapping.get(corpus_id) for corpus_id in corpus_ids]
+            self.dim_size = corpus_embeddings.shape[1]
+
+            del sub_corpus_embeddings
+
+            return faiss_ids, corpus_embeddings
+        else:
+            return self.faiss_ids, self.corpus_embeddings
     
     def search(self, 
                corpus: Dict[str, Dict[str, str]],
@@ -186,6 +192,7 @@ class PQFaissSearch(DenseRetrievalFaissSearch):
             self.faiss_index = FaissTrainIndex(base_index, passage_ids)
 
     def index(self, corpus: Dict[str, Dict[str, str]], score_function: str = None, **kwargs):
+        
         faiss_ids, corpus_embeddings = super()._index(corpus, score_function, **kwargs)  
 
         print("Using Product Quantization (PQ) in Flat mode!")
@@ -337,7 +344,7 @@ class FlatIPFaissSearch(DenseRetrievalFaissSearch):
     def index(self, corpus: Dict[str, Dict[str, str]], score_function: str = None, **kwargs):
         faiss_ids, corpus_embeddings = super()._index(corpus, score_function, **kwargs)
         base_index = faiss.IndexFlatIP(self.dim_size)
-        print("gpu index being created ...")
+        #print("gpu index being created ...")
         #base_index = faiss.GpuIndexIVF.add_with_ids(x=corpus_embeddings,ids=faiss_ids)
         if self.use_gpu:
             print("Moving Faiss Index from CPU to GPU...")
