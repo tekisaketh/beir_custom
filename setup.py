@@ -9,7 +9,7 @@ optional_packages = {
 
 setup(
     name="beir",
-    version="2.0.0",
+    version="2.1.0",
     author="Nandan Thakur",
     author_email="nandant@gmail.com",
     description="A Heterogeneous Benchmark for Information Retrieval",
@@ -23,7 +23,7 @@ setup(
     install_requires=[
         'sentence-transformers',
         'pytrec_eval',
-        'faiss_cpu',
+        'faiss_gpu',
         'elasticsearch==7.9.1',
         'datasets'
     ],
