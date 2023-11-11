@@ -66,7 +66,7 @@ class DenseRetrievalFaissSearch(BaseSearch):
     
     def _index(self, corpus: Dict[str, Dict[str, str]], score_function: str = None):
         
-        if((self.corpus_embeddings == None) or (self.faiss_ids ==None)):
+        if(isinstance(self.corpus_embeddings,np.ndarray) and isinstance(self.faiss_ids2,np.ndarray)):
             tqdm.write("creating index ...")
             #check
             print("Sorting Corpus by document length (Longest first)...")
