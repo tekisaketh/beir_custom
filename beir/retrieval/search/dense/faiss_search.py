@@ -134,7 +134,7 @@ class DenseRetrievalFaissSearch(BaseSearch):
         if(self.query_embeddings==None):
             query_ids, query_embeddings = self.create_embeddings(queries=queries, score_function=score_function)
         
-        faiss_scores, faiss_doc_ids = self.faiss_index.search(query_embeddings, top_k, **kwargs)
+        faiss_scores, faiss_doc_ids = self.faiss_index.search(self.query_embeddings, top_k, **kwargs)
         
         for idx in range(len(query_ids)):
             scores = [float(score) for score in faiss_scores[idx]]
