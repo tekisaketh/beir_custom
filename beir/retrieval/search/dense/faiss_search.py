@@ -201,7 +201,7 @@ class PQFaissSearch(DenseRetrievalFaissSearch):
         print("Parameters Used: code_size: {}".format(self.code_size))          
         
         base_index = faiss.IndexPQ(self.dim_size, self.num_of_centroids, self.code_size, self.similarity_metric)
-
+        print("base index done...")
         if self.use_rotation:
             print("Rotating data before encoding it with a product quantizer...")
             print("Creating OPQ Matrix...")
@@ -213,9 +213,11 @@ class PQFaissSearch(DenseRetrievalFaissSearch):
         if self.use_gpu:
             print("Moving Faiss Index from CPU to GPU...")
             gpu_base_index = faiss.index_cpu_to_gpu(self.single_gpu, 0, base_index)
+            print("moved to gpu, now it should be built...")
             self.faiss_index = FaissTrainIndex.build(faiss_ids, corpus_embeddings, gpu_base_index)
         
         else:
+            print("building index...")
             self.faiss_index = FaissTrainIndex.build(faiss_ids, corpus_embeddings, base_index)
 
     def save(self, output_dir: str, prefix: str = "my-index", ext: str = "pq"):

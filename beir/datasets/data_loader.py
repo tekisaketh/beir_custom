@@ -101,7 +101,7 @@ class GenericDataLoader:
         print("loading limited files are:",self.limit)
         with open(self.corpus_file, encoding='utf8') as fIn:
             count=0
-            for line in tqdm(fIn, total=self.limit):
+            for line in tqdm(fIn, total=self.limit-1):
                 line = json.loads(line)
                 count+=1
                 self.corpus[line.get("_id")] = {
