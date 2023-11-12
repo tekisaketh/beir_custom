@@ -13,13 +13,14 @@ logger = logging.getLogger(__name__)
 #Parent class for any faiss search
 class DenseRetrievalFaissSearch(BaseSearch):
     
-    def __init__(self, model, corpus_embeddings: np.ndarray=None,faiss_ids: np.ndarray=None, query_embeddings: np.ndarray=None,batch_size: int = 128, corpus_chunk_size: int = 50000, use_gpu: bool = False, **kwargs):
+    def __init__(self, model, corpus_embeddings: np.ndarray=None,faiss_ids: np.ndarray=None, query_embeddings: np.ndarray=None,query_ids: np.ndaraay=None,batch_size: int = 128, corpus_chunk_size: int = 50000, use_gpu: bool = False, **kwargs):
         print("okay")
         self.model = model
         self.batch_size = batch_size
         self.corpus_embeddings = corpus_embeddings
         self.query_embeddings = query_embeddings
         self.faiss_ids = faiss_ids
+        self.query_ids = query_ids
         self.corpus_chunk_size = corpus_chunk_size
         self.score_functions = ['cos_sim','dot']
         self.mapping_tsv_keys = ["beir-docid", "faiss-docid"]
@@ -110,6 +111,7 @@ class DenseRetrievalFaissSearch(BaseSearch):
     
     def create_embeddings(self, queries: Dict[str, str],score_function = str):
         
+        assert score_function in self.score_functions
         normalize_embeddings = True if score_function == "cos_sim" else False
         query_ids = list(queries.keys())
         queries = [queries[qid] for qid in queries]
@@ -119,21 +121,18 @@ class DenseRetrievalFaissSearch(BaseSearch):
             batch_size=self.batch_size, 
             normalize_embeddings=normalize_embeddings)
         
-        return query_embeddings
+        return query_ids, query_embeddings
 
     def search(self, 
                corpus: Dict[str, Dict[str, str]],
                queries: Dict[str, str], 
                top_k: int,
                score_function = str, **kwargs) -> Dict[str, Dict[str, float]]:
-        
-        assert score_function in self.score_functions
-        normalize_embeddings = True if score_function == "cos_sim" else False
 
         if not self.faiss_index: self.index(corpus, score_function)
 
         if(self.query_embeddings==None):
-            query_embeddings = self.create_embeddings(queries=queries, score_function=score_function)
+            query_ids, query_embeddings = self.create_embeddings(queries=queries, score_function=score_function)
         
         faiss_scores, faiss_doc_ids = self.faiss_index.search(query_embeddings, top_k, **kwargs)
         
