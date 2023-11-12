@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 #Parent class for any faiss search
 class DenseRetrievalFaissSearch(BaseSearch):
     
-    def __init__(self, model, corpus_embeddings: np.ndarray=None,faiss_ids: np.ndarray=None, query_embeddings: np.ndarray=None,query_ids: np.ndaraay=None,batch_size: int = 128, corpus_chunk_size: int = 50000, use_gpu: bool = False, **kwargs):
+    def __init__(self, model, corpus_embeddings: np.ndarray=None,faiss_ids: np.ndarray=None, query_embeddings: np.ndarray=None,query_ids: np.ndarray=None,batch_size: int = 128, corpus_chunk_size: int = 50000, use_gpu: bool = False, **kwargs):
         print("okay")
         self.model = model
         self.batch_size = batch_size
