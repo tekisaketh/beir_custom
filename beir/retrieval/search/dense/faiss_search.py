@@ -132,17 +132,17 @@ class DenseRetrievalFaissSearch(BaseSearch):
         if not self.faiss_index: self.index(corpus, score_function)
 
         if(self.query_embeddings==None):
-            query_ids, query_embeddings = self.create_embeddings(queries=queries, score_function=score_function)
+            self.query_ids, self.query_embeddings = self.create_embeddings(queries=queries, score_function=score_function)
         
         faiss_scores, faiss_doc_ids = self.faiss_index.search(self.query_embeddings, top_k, **kwargs)
         
-        for idx in range(len(query_ids)):
+        for idx in range(len(self.query_ids)):
             scores = [float(score) for score in faiss_scores[idx]]
             if len(self.rev_mapping) != 0:
                 doc_ids = [self.rev_mapping[doc_id] for doc_id in faiss_doc_ids[idx]]
             else:
                 doc_ids = [str(doc_id) for doc_id in faiss_doc_ids[idx]]
-            self.results[query_ids[idx]] = dict(zip(doc_ids, scores))
+            self.results[self.query_ids[idx]] = dict(zip(doc_ids, scores))
         
         return self.results
 
