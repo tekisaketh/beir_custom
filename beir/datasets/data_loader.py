@@ -104,7 +104,7 @@ class GenericDataLoader:
             return self.corpus
     
     def _load_corpus(self):
-        if(self.check(fIn=self.corpus_file, ext="jsonl")):
+        if("jsonl" in self.corpus_file):
             num_lines = sum(1 for i in open(self.corpus_file, 'rb'))
             #print("loading limited lines:",self.limit)
             with open(self.corpus_file, encoding='utf8') as fIn:
@@ -117,7 +117,7 @@ class GenericDataLoader:
                 # for line in fIn.readlines(self.limit):
                 #     line = json.loads(line)
                 #     self.corpus[line.get("_id")] = {"text": line.get("text"),"title": line.get("title")}
-        elif(self.check(fIn=self.corpus_file, ext="pickle")):
+        elif("pickle" in self.corpus_file):
             with open(self.corpus_file, 'rb', encoding='utf8') as file:
                 self.corpus = pickle.load(file)
             
