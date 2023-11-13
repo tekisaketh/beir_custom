@@ -118,7 +118,7 @@ class GenericDataLoader:
                 #     line = json.loads(line)
                 #     self.corpus[line.get("_id")] = {"text": line.get("text"),"title": line.get("title")}
         elif("pickle" in self.corpus_file):
-            with open(self.corpus_file, 'rb', encoding='utf8') as file:
+            with open(self.corpus_file, 'rb') as file:
                 self.corpus = pickle.load(file)
             
     
