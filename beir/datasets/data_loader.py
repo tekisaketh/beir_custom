@@ -10,11 +10,12 @@ logger = logging.getLogger(__name__)
 class GenericDataLoader:
     
     def __init__(self, data_folder: str = None, prefix: str = None, corpus_file: str = "corpus.jsonl", query_file: str = "queries.jsonl", 
-                 qrels_folder: str = "qrels", qrels_file: str = ""):
+                 qrels_folder: str = "qrels", qrels_file: str = "", limit: int=50000):
         self.corpus = {}
         self.queries = {}
         self.qrels = {}
-
+        self.limit = limit
+        
         if prefix:
             query_file = prefix + "-" + query_file
             qrels_folder = prefix + "-" + qrels_folder
@@ -57,9 +58,8 @@ class GenericDataLoader:
         
         return self.corpus, self.queries, self.qrels
 
-    def load(self,limit: int=150000, split="test") -> Tuple[Dict[str, Dict[str, str]], Dict[str, str], Dict[str, Dict[str, int]]]:
+    def load(self, split="test") -> Tuple[Dict[str, Dict[str, str]], Dict[str, str], Dict[str, Dict[str, int]]]:
         
-        self.limit=limit
         self.qrels_file = os.path.join(self.qrels_folder, split + ".tsv")
         self.check(fIn=self.corpus_file, ext="jsonl")
         self.check(fIn=self.query_file, ext="jsonl")
@@ -67,7 +67,7 @@ class GenericDataLoader:
         
         if not len(self.corpus):
             #print("Loading Corpus...x")
-            self._load_corpus(self.limit)
+            self._load_corpus()
             # print("Loaded %d %s Documents.", len(self.corpus), split.upper())
             # print("Doc Example: %s", list(self.corpus.values())[0])
         
@@ -84,20 +84,18 @@ class GenericDataLoader:
         
         return self.corpus, self.queries, self.qrels
     
-    def load_corpus(self, limit:int=150000) -> Dict[str, Dict[str, str]]:
-        self.limit=limit
+    def load_corpus(self) -> Dict[str, Dict[str, str]]:
         self.check(fIn=self.corpus_file, ext="jsonl")
 
         if not len(self.corpus):
             print("Loading Corpus...")
-            self._load_corpus(self.limit)
+            self._load_corpus()
             # print("Loaded %d Documents.", len(self.corpus))
             # print("Doc Example: %s", list(self.corpus.values())[0])
 
         return self.corpus
     
-    def _load_corpus(self, limit:int=150000):
-        self.limit=limit
+    def _load_corpus(self):
         #num_lines = sum(1 for i in open(self.corpus_file, 'rb'))
         print("loading limited lines:",self.limit)
         with open(self.corpus_file, encoding='utf8') as fIn:
