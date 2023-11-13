@@ -90,7 +90,7 @@ class GenericDataLoader:
 
         if not len(self.corpus):
             print("Loading Corpus...")
-            self._load_corpus(self.checklimit)
+            self._load_corpus(self.limit)
             # print("Loaded %d Documents.", len(self.corpus))
             # print("Doc Example: %s", list(self.corpus.values())[0])
 
