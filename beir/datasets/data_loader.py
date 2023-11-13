@@ -4,6 +4,7 @@ import json
 import os
 import logging
 import csv
+import pickle
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +62,10 @@ class GenericDataLoader:
     def load(self, split="test") -> Tuple[Dict[str, Dict[str, str]], Dict[str, str], Dict[str, Dict[str, int]]]:
         
         self.qrels_file = os.path.join(self.qrels_folder, split + ".tsv")
-        self.check(fIn=self.corpus_file, ext="jsonl")
+        try:
+            self.check(fIn=self.corpus_file, ext="jsonl")
+        except Exception:
+            self.check(fIn=self.corpus_file, ext="pickle")
         self.check(fIn=self.query_file, ext="jsonl")
         self.check(fIn=self.qrels_file, ext="tsv")
         
@@ -85,15 +89,19 @@ class GenericDataLoader:
         return self.corpus, self.queries, self.qrels
     
     def load_corpus(self) -> Dict[str, Dict[str, str]]:
-        self.check(fIn=self.corpus_file, ext="jsonl")
+        
+        if(self.check(fIn=self.corpus_file, ext="jsonl")):
+            if not len(self.corpus):
+                print("Loading Corpus...")
+                self._load_corpus()
+                # print("Loaded %d Documents.", len(self.corpus))
+                # print("Doc Example: %s", list(self.corpus.values())[0])
 
-        if not len(self.corpus):
-            print("Loading Corpus...")
-            self._load_corpus()
-            # print("Loaded %d Documents.", len(self.corpus))
-            # print("Doc Example: %s", list(self.corpus.values())[0])
-
-        return self.corpus
+            return self.corpus
+        elif(self.check(fIn=self.corpus_file, ext="pickle")):
+            with open(self.corpus_file, 'rb') as file:
+                self.corpus = pickle.load(file)
+            return self.corpus
     
     def _load_corpus(self):
         num_lines = sum(1 for i in open(self.corpus_file, 'rb'))
