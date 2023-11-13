@@ -99,7 +99,7 @@ class GenericDataLoader:
 
             return self.corpus
         elif(self.check(fIn=self.corpus_file, ext="pickle")):
-            with open(self.corpus_file, 'rb') as file:
+            with open(self.corpus_file, 'rb', encoding='utf8') as file:
                 self.corpus = pickle.load(file)
             return self.corpus
     
