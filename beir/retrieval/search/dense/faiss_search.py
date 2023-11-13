@@ -68,7 +68,10 @@ class DenseRetrievalFaissSearch(BaseSearch):
     
     def _index(self, corpus: Dict[str, Dict[str, str]], score_function: str = None):
         print("yes its here !")
+        
         if(isinstance(self.corpus_embeddings,np.ndarray) and isinstance(self.faiss_ids,list)):
+            corpus_ids = sorted(corpus, key=lambda k: len(corpus[k].get("title", "") + corpus[k].get("text", "")), reverse=True)
+            self._create_mapping_ids(corpus_ids)
             return self.faiss_ids, self.corpus_embeddings
         else:
             tqdm.write("creating index ...")
