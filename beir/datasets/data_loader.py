@@ -66,20 +66,21 @@ class GenericDataLoader:
         self.check(fIn=self.qrels_file, ext="tsv")
         
         if not len(self.corpus):
-            print("Loading Corpus...x")
+            #print("Loading Corpus...x")
             self._load_corpus(self.limit)
-            print("Loaded %d %s Documents.", len(self.corpus), split.upper())
-            print("Doc Example: %s", list(self.corpus.values())[0])
+            # print("Loaded %d %s Documents.", len(self.corpus), split.upper())
+            # print("Doc Example: %s", list(self.corpus.values())[0])
         
         if not len(self.queries):
             print("Loading Queries...")
             self._load_queries()
         
         if os.path.exists(self.qrels_file):
+            print("Loading qrels...")
             self._load_qrels()
             self.queries = {qid: self.queries[qid] for qid in self.qrels}
-            print("Loaded %d %s Queries.", len(self.queries), split.upper())
-            print("Query Example: %s", list(self.queries.values())[0])
+            # print("Loaded %d %s Queries.", len(self.queries), split.upper())
+            # print("Query Example: %s", list(self.queries.values())[0])
         
         return self.corpus, self.queries, self.qrels
     
@@ -90,28 +91,25 @@ class GenericDataLoader:
         if not len(self.corpus):
             print("Loading Corpus...")
             self._load_corpus(self.checklimit)
-            print("Loaded %d Documents.", len(self.corpus))
-            print("Doc Example: %s", list(self.corpus.values())[0])
+            # print("Loaded %d Documents.", len(self.corpus))
+            # print("Doc Example: %s", list(self.corpus.values())[0])
 
         return self.corpus
     
     def _load_corpus(self, limit:int=150000):
         self.limit=limit
-        num_lines = sum(1 for i in open(self.corpus_file, 'rb'))
-        print("loading limited files are:",self.limit)
+        #num_lines = sum(1 for i in open(self.corpus_file, 'rb'))
+        print("loading limited lines:",self.limit)
         with open(self.corpus_file, encoding='utf8') as fIn:
-            count=0
-            for line in tqdm(fIn, total=num_lines):
+            # for line in tqdm(fIn, total=num_lines):
+            #     line = json.loads(line)
+            #     self.corpus[line.get("_id")] = {
+            #         "text": line.get("text"),
+            #         "title": line.get("title"),
+            #     }
+            for line in fIn.readlines(self.limit):
                 line = json.loads(line)
-                count+=1
-                self.corpus[line.get("_id")] = {
-                    "text": line.get("text"),
-                    "title": line.get("title"),
-                }
-                #print(count)
-                # if(count==self.limit):
-                #     print("break")
-                #     break
+                self.corpus[line.get("_id")] = {"text": line.get("text"),"title": line.get("title")}
     
     def _load_queries(self):
         
