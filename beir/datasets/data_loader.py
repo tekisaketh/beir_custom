@@ -15,7 +15,7 @@ class GenericDataLoader:
         self.queries = {}
         self.qrels = {}
         self.limit = limit
-        
+
         if prefix:
             query_file = prefix + "-" + query_file
             qrels_folder = prefix + "-" + qrels_folder
@@ -96,18 +96,18 @@ class GenericDataLoader:
         return self.corpus
     
     def _load_corpus(self):
-        #num_lines = sum(1 for i in open(self.corpus_file, 'rb'))
-        print("loading limited lines:",self.limit)
+        num_lines = sum(1 for i in open(self.corpus_file, 'rb'))
+        #print("loading limited lines:",self.limit)
         with open(self.corpus_file, encoding='utf8') as fIn:
-            # for line in tqdm(fIn, total=num_lines):
-            #     line = json.loads(line)
-            #     self.corpus[line.get("_id")] = {
-            #         "text": line.get("text"),
-            #         "title": line.get("title"),
-            #     }
-            for line in fIn.readlines(self.limit):
+            for line in tqdm(fIn, total=num_lines):
                 line = json.loads(line)
-                self.corpus[line.get("_id")] = {"text": line.get("text"),"title": line.get("title")}
+                self.corpus[line.get("_id")] = {
+                    "text": line.get("text"),
+                    "title": line.get("title"),
+                }
+            # for line in fIn.readlines(self.limit):
+            #     line = json.loads(line)
+            #     self.corpus[line.get("_id")] = {"text": line.get("text"),"title": line.get("title")}
     
     def _load_queries(self):
         
