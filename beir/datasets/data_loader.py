@@ -62,10 +62,10 @@ class GenericDataLoader:
     def load(self, split="test") -> Tuple[Dict[str, Dict[str, str]], Dict[str, str], Dict[str, Dict[str, int]]]:
         
         self.qrels_file = os.path.join(self.qrels_folder, split + ".tsv")
-        try:
-            self.check(fIn=self.corpus_file, ext="jsonl")
-        except Exception:
-            self.check(fIn=self.corpus_file, ext="pickle")
+        # try:
+        #     self.check(fIn=self.corpus_file, ext="jsonl")
+        # except Exception:
+        #     self.check(fIn=self.corpus_file, ext="pickle")
         self.check(fIn=self.query_file, ext="jsonl")
         self.check(fIn=self.qrels_file, ext="tsv")
         
@@ -104,18 +104,23 @@ class GenericDataLoader:
             return self.corpus
     
     def _load_corpus(self):
-        num_lines = sum(1 for i in open(self.corpus_file, 'rb'))
-        #print("loading limited lines:",self.limit)
-        with open(self.corpus_file, encoding='utf8') as fIn:
-            for line in tqdm(fIn, total=num_lines):
-                line = json.loads(line)
-                self.corpus[line.get("_id")] = {
-                    "text": line.get("text"),
-                    "title": line.get("title"),
-                }
-            # for line in fIn.readlines(self.limit):
-            #     line = json.loads(line)
-            #     self.corpus[line.get("_id")] = {"text": line.get("text"),"title": line.get("title")}
+        if(self.check(fIn=self.corpus_file, ext="jsonl")):
+            num_lines = sum(1 for i in open(self.corpus_file, 'rb'))
+            #print("loading limited lines:",self.limit)
+            with open(self.corpus_file, encoding='utf8') as fIn:
+                for line in tqdm(fIn, total=num_lines):
+                    line = json.loads(line)
+                    self.corpus[line.get("_id")] = {
+                        "text": line.get("text"),
+                        "title": line.get("title"),
+                    }
+                # for line in fIn.readlines(self.limit):
+                #     line = json.loads(line)
+                #     self.corpus[line.get("_id")] = {"text": line.get("text"),"title": line.get("title")}
+        elif(self.check(fIn=self.corpus_file, ext="pickle")):
+            with open(self.corpus_file, 'rb', encoding='utf8') as file:
+                self.corpus = pickle.load(file)
+            
     
     def _load_queries(self):
         
