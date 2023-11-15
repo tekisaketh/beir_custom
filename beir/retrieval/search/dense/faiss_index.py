@@ -22,8 +22,9 @@ class FaissIndex:
         scores_arr, ids_arr = self.index.search(query_embeddings, k)
         if self._passage_ids is not None:
             ids_arr = self._passage_ids[ids_arr.reshape(-1)].reshape(query_embeddings.shape[0], -1)
-        print("Total search time: %.3f", time.time() - start_time)
-        return scores_arr, ids_arr
+        time_taken = time.time() - start_time
+        print("Total search time: %.3f", time_taken)
+        return scores_arr, ids_arr, time_taken
     
     def save(self, fname: str):
         faiss.write_index(self.index, fname)
