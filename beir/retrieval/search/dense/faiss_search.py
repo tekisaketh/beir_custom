@@ -137,11 +137,11 @@ class DenseRetrievalFaissSearch(BaseSearch):
         if(isinstance(self.query_embeddings,np.ndarray)==False):
             self.query_ids, self.query_embeddings = self.create_embeddings(queries=queries, score_function=score_function)
         
-        faiss_scores, faiss_doc_ids, time = self.faiss_index.search(self.query_embeddings, top_k, **kwargs)
+        faiss_scores, faiss_doc_ids = self.faiss_index.search(self.query_embeddings, top_k, **kwargs)
 
-        average_time_taken = round((time/len(self.query_embeddings)),3)
+        #average_time_taken = round((time/len(self.query_embeddings)),3)
         
-        print(average_time_taken)
+        #print(average_time_taken)
         
         for idx in range(len(self.query_ids)):
             scores = [float(score) for score in faiss_scores[idx]]
