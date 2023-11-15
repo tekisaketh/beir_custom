@@ -141,6 +141,8 @@ class DenseRetrievalFaissSearch(BaseSearch):
 
         average_time_taken = round((time/len(self.query_embeddings)),3)
         
+        print(average_time_taken)
+        
         for idx in range(len(self.query_ids)):
             scores = [float(score) for score in faiss_scores[idx]]
             if len(self.rev_mapping) != 0:
@@ -149,7 +151,7 @@ class DenseRetrievalFaissSearch(BaseSearch):
                 doc_ids = [str(doc_id) for doc_id in faiss_doc_ids[idx]]
             self.results[self.query_ids[idx]] = dict(zip(doc_ids, scores))
         
-        return self.results, average_time_taken
+        return self.results
 
 
 class BinaryFaissSearch(DenseRetrievalFaissSearch):
