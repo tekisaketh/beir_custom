@@ -57,7 +57,7 @@ class FaissIndex:
 
 
 class FaissHNSWIndex(FaissIndex):
-    def search(self, query_embeddings: np.ndarray, k: int, **kwargs) -> Tuple[np.ndarray, np.ndarray]:
+    def search(self, query_embeddings: np.ndarray, k: int, **kwargs) -> List[np.ndarray, np.ndarray, float]:
         query_embeddings = np.hstack((query_embeddings, np.zeros((query_embeddings.shape[0], 1), dtype=np.float32)))
         return super().search(query_embeddings, k)
     
