@@ -17,7 +17,7 @@ class FaissIndex:
         if passage_ids is not None:
             self._passage_ids = np.array(passage_ids, dtype=np.int64)
 
-    def search(self, query_embeddings: np.ndarray, k: int, **kwargs) -> Tuple[np.ndarray, np.ndarray]:
+    def search(self, query_embeddings: np.ndarray, k: int, **kwargs) -> List[np.ndarray, np.ndarray, float]:
         start_time = time.time()
         scores_arr, ids_arr = self.index.search(query_embeddings, k)
         if self._passage_ids is not None:
