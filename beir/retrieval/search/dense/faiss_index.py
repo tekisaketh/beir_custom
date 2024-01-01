@@ -11,9 +11,10 @@ logger = logging.getLogger(__name__)
 
 
 class FaissIndex:
-    def __init__(self, index: faiss.Index, passage_ids: List[int] = None):
+    def __init__(self,passage_embeddings, index: faiss.Index,  passage_ids: List[int] = None):
         self.index = index
         self._passage_ids = None
+        self.passage_embeddings = passage_embeddings
         if passage_ids is not None:
             self._passage_ids = np.array(passage_ids, dtype=np.int64)
 
@@ -37,9 +38,12 @@ class FaissIndex:
         index: Optional[faiss.Index] = None,
         buffer_size: int = 50000,
     ):
+        if isinstance(passage_embeddings,np.ndarray):
+            print("true passage emb are passed to build func")
         if index is None:
             index = faiss.IndexFlatIP(passage_embeddings.shape[1])
         for start in trange(0, len(passage_ids), buffer_size):
+            print("adding emb to index..")
             index.add(passage_embeddings[start : start + buffer_size])
 
         return cls(index, passage_ids)
@@ -76,6 +80,7 @@ class FaissHNSWIndex(FaissIndex):
         max_sq_norm = float(sq_norms.max())
         aux_dims = np.sqrt(max_sq_norm - sq_norms)
         passage_embeddings = np.hstack((passage_embeddings, aux_dims.reshape(-1, 1)))
+        print("handing it over to main index from hnsw index building function")
         return super().build(passage_ids, passage_embeddings, index, buffer_size)
 
 class FaissTrainIndex(FaissIndex):

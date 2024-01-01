@@ -291,6 +291,7 @@ class HNSWFaissSearch(DenseRetrievalFaissSearch):
             gpu_base_index = faiss.index_cpu_to_gpu(self.single_gpu, 0, base_index)
             self.faiss_index = FaissHNSWIndex.build(faiss_ids, corpus_embeddings, gpu_base_index)
         else:
+            print("preparing to build index")
             self.faiss_index = FaissHNSWIndex.build(faiss_ids, corpus_embeddings, base_index)
 
     def save(self, output_dir: str, prefix: str = "my-index", ext: str = "hnsw"):
