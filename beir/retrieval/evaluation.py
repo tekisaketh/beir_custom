@@ -64,11 +64,13 @@ class EvaluateRetrieval:
             precision[f"P@{k}"] = 0.0
         
         map_string = "map_cut." + ",".join([str(k) for k in k_values])
+        print("map_string:",map_string)
         ndcg_string = "ndcg_cut." + ",".join([str(k) for k in k_values])
         recall_string = "recall." + ",".join([str(k) for k in k_values])
         precision_string = "P." + ",".join([str(k) for k in k_values])
         evaluator = pytrec_eval.RelevanceEvaluator(qrels, {map_string, ndcg_string, recall_string, precision_string})
         scores = evaluator.evaluate(results)
+        print("scores var:",scores)
         
         for query_id in scores.keys():
             for k in k_values:
