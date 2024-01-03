@@ -41,6 +41,7 @@ class FaissIndex:
         if isinstance(passage_embeddings,np.ndarray):
             print("true passage emb are passed to build func")
         if index is None:
+            print("index is building...")
             index = faiss.IndexFlatIP(passage_embeddings.shape[1])
         for start in trange(0, len(passage_ids), buffer_size):
             print("adding emb to index..")
