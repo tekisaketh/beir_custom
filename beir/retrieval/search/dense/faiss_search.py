@@ -132,7 +132,9 @@ class DenseRetrievalFaissSearch(BaseSearch):
                top_k: int,
                score_function = str, **kwargs) -> Dict[str, Dict[str, float]]:
 
-        if not self.faiss_index: self.index(corpus, score_function)
+        if not self.faiss_index: 
+            print("no index found. initializing one..")
+            self.index(corpus, score_function)
 
         if(isinstance(self.query_embeddings,np.ndarray)==False):
             print("creating query embeddings")
