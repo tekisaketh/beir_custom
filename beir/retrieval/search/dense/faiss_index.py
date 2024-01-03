@@ -11,10 +11,9 @@ logger = logging.getLogger(__name__)
 
 
 class FaissIndex:
-    def __init__(self,passage_embeddings, index: faiss.Index,  passage_ids: List[int] = None):
+    def __init__(self, index: faiss.Index, passage_ids: List[int] = None):
         self.index = index
         self._passage_ids = None
-        self.passage_embeddings = passage_embeddings
         if passage_ids is not None:
             self._passage_ids = np.array(passage_ids, dtype=np.int64)
 
@@ -23,8 +22,7 @@ class FaissIndex:
         scores_arr, ids_arr = self.index.search(query_embeddings, k)
         if self._passage_ids is not None:
             ids_arr = self._passage_ids[ids_arr.reshape(-1)].reshape(query_embeddings.shape[0], -1)
-        time_taken = time.time() - start_time
-        print("Total search time: %.3f", time_taken)
+        logger.info("Total search time: %.3f", time.time() - start_time)
         return scores_arr, ids_arr
     
     def save(self, fname: str):
@@ -38,13 +36,9 @@ class FaissIndex:
         index: Optional[faiss.Index] = None,
         buffer_size: int = 50000,
     ):
-        if isinstance(passage_embeddings,np.ndarray):
-            print("true passage emb are passed to build func")
         if index is None:
-            print("index is building...")
             index = faiss.IndexFlatIP(passage_embeddings.shape[1])
         for start in trange(0, len(passage_ids), buffer_size):
-            print("adding emb to index..")
             index.add(passage_embeddings[start : start + buffer_size])
 
         return cls(index, passage_ids)
@@ -81,7 +75,6 @@ class FaissHNSWIndex(FaissIndex):
         max_sq_norm = float(sq_norms.max())
         aux_dims = np.sqrt(max_sq_norm - sq_norms)
         passage_embeddings = np.hstack((passage_embeddings, aux_dims.reshape(-1, 1)))
-        print("handing it over to main index from hnsw index building function")
         return super().build(passage_ids, passage_embeddings, index, buffer_size)
 
 class FaissTrainIndex(FaissIndex):
@@ -127,13 +120,13 @@ class FaissBinaryIndex(FaissIndex):
 
         if self._passage_ids is not None:
             _, ids_arr = self.index.search(bin_query_embeddings, binary_k)
-            print("Initial search time: %.3f", time.time() - start_time)
+            logger.info("Initial search time: %.3f", time.time() - start_time)
             passage_embeddings = np.unpackbits(self._passage_embeddings[ids_arr.reshape(-1)])
             passage_embeddings = passage_embeddings.reshape(num_queries, binary_k, -1).astype(np.float32)
         else:
             raw_index = self.index.index
             _, ids_arr = raw_index.search(bin_query_embeddings, binary_k)
-            print("Initial search time: %.3f", time.time() - start_time)
+            logger.info("Initial search time: %.3f", time.time() - start_time)
             passage_embeddings = np.vstack(
                 [np.unpackbits(raw_index.reconstruct(int(id_))) for id_ in ids_arr.reshape(-1)]
             )
@@ -158,7 +151,7 @@ class FaissBinaryIndex(FaissIndex):
             ids_arr = ids_arr.reshape(num_queries, -1)
 
         scores_arr = scores_arr[np.arange(num_queries)[:, None], sorted_indices]
-        print("Total search time: %.3f", time.time() - start_time)
+        logger.info("Total search time: %.3f", time.time() - start_time)
 
         return scores_arr[:, :k], ids_arr[:, :k]
     
